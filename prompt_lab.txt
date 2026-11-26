@@ -1,0 +1,58 @@
+Saya ingin membangun sebuah **Sistem Manajemen Laboratorium Garment (Web Application)** di folder proyek `D:\laragon\www\labb`. 
+
+Sebelum mulai menulis kode, **pahami seluruh spesifikasi bisnis, alur sistem, struktur database, dan referensi file** yang sudah ada di folder `D:\laragon\www\labb`, lalu **tanyakan kepada saya hal-hal teknis atau detail bisnis yang masih ambigu/belum jelas**
+---
+
+### 1. Referensi File di Folder Proyek (`D:\laragon\www\labb`)
+Gunakan file-file berikut sebagai acuan utama desain sistem, database, UI form, dan output PDF:
+1. `flow.png` & `Rancangan.docx`: Acuan alur kerja (5 tahap utama) dan aturan bisnis.
+2. `database_relation.png`: Acuan struktur tabel, kolom, tipe data, dan relasi database (ERD).
+3. `test_package.jpg`: Acuan master data Test Package dan daftar Test Item di dalamnya.
+4. `tabel_techinician.png` (atau gambar tabel input teknisi): Acuan format form/tabel input hasil pengujian oleh teknisi.
+5. `REPORT PROJECT.pdf`: Acuan desain layout, struktur halaman, header/footer, dan format cetak laporan akhir (PDF).
+
+---
+
+### 2. Peran Pengguna (User Roles) & Alur Kerja Sistem
+
+#### Tahap 1: Requestor (Pendaftaran Pengujian)
+- **Akses:** Diinput melalui komputer/desktop di area Lab.
+- **Input Data:** Requestor mengisi form `lab_request` (sesuai kolom pada `database_relation.png` seperti Applicant, Brand, Sample Description, Season, Phase, Style, Colour, Product Type, PO#, Destination, Fiber Content, Care Instruction, Previous Test, Retest, dll) serta kuantitas awal specimen (`specimen`).
+- **Pemilihan Paket Uji:** Requestor hanya bisa memilih **1 Test Package** dari 2 pilihan (sesuai `test_package.jpg`):
+  1. *Basic Garment* (8 test items: LAB-0004, LAB-0005, LAB-0001, LAB-0038, LAB-0057, LAB-0012, LAB-0013, LAB-0022).
+  2. *Garment Climacool / flashdry / Quick dry* (11 test items: 8 item Basic Garment + LAB-0047, LAB-0045, LAB-0049).
+- **Output Tahap 1:** Setelah submit, sistem wajib men-generate **Nomor PRO** otomatis (yang nantinya menjadi *Test Report No.*).
+
+#### Tahap 2: CS Lab (Validasi Awal, Foto Before & Antrean)
+- **Verifikasi Data:** CS menerima request beserta fisik specimen. CS dapat mengedit informasi yang sifatnya *tidak wajib* (data wajib seperti Applicant, Brand, Season, Style dikunci/tidak boleh diubah CS).
+- **Penyesuaian Test Item:** CS dapat melakukan *unchecklist* (menghapus centang) pada item tes tertentu di dalam Test Package jika tidak dibutuhkan.
+- **Dokumentasi Foto Before:** CS wajib mengambil/mengunggah foto specimen *Before Test* (**maksimal 3 foto**).
+- **Estimasi & Antrean:** Sistem menampilkan estimasi tanggal selesai (`estimasi`) berdasarkan master package. Setelah divalidasi (`cs_validation`), request masuk ke daftar antrean (`status_antrean`) untuk dikerjakan Technical Lab.
+
+#### Tahap 3: Technical Lab (Input Hasil Pengujian)
+- **Input Paralel:** Beberapa teknisi dapat menginput hasil pengujian secara paralel/bersamaan pada nomor PRO yang sama sesuai daftar item tes yang sudah divalidasi CS.
+- **Form Input Dinamis:** Teknisi dapat memilih dan mengisi tabel pengujian sesuai metode/jenis tesnya (mengacu pada `tabel_techinician.png`, misalnya tabel *tabel 1* dengan perhitungan otomatis persentase perubahan dimensi, atau tabel *tabel 2* beserta *Remark*-nya).
+- **Status Draft:** Setelah semua item tes selesai diisi dan di-submit, status hasil pengujian menjadi **Draft** dan diteruskan ke Validator Akhir. Selama belum di-approve validator, teknisi masih bisa mengedit hasil tesnya.
+
+#### Tahap 4: Final Validation (Validasi Akhir & Cetak Report)
+- **Review & Koreksi:** Validator akhir memeriksa draf laporan dan berhak mengedit informasi request jika ada kesalahan ketik/typo (misalnya koreksi *fiber content*, deskripsi spesimen, atau *season*).
+- **Dokumentasi Foto After:** Sebelum validasi akhir, validator wajib mengunggah foto specimen kondisi *After Test* beserta **Remark** untuk masing-masing foto. **Aturan wajib:** Jumlah foto *After* harus sama persis dengan jumlah foto *Before* yang diunggah CS.
+- **Finalisasi & Output PDF:** Setelah semua data benar dan foto lengkap, validator menekan tombol *Submit / Final Validate*. Sistem menerbitkan `final_report` dan menghasilkan laporan akhir berformat PDF yang layout-nya persis seperti `REPORT PROJECT.pdf` (mencakup header lab, informasi sampel, foto before/after, tabel ringkasan P/F/N/A/D, detail tabel hasil tiap metode uji, serta tanda tangan approval).
+
+#### Tahap 5: Specimen Return (Opsional / Penanganan Akhir Specimen)
+- Pencatatan status akhir specimen (dikembalikan ke requestor / disimpan / dimusnahkan) dan rekonsiliasi kuantitas (`status_akhir` pada tabel `specimen`).
+
+---
+
+### 3. Aturan Pengerjaan (WAJIB DIIKUTI)
+1. **Jangan langsung membuat kode lengkap sekaligus.**
+2. **Langkah Pertama Sekarang:** Analisis kebutuhan di atas, dan ajukan daftar pertanyaan klarifikasi kepada saya mengenai hal-hal yang belum kamu pahami atau butuh keputusan teknis sebelum mulai coding.
+3. **Eksekusi Bertahap:** Setelah saya menjawab pertanyaanmu, kita akan membagi pengerjaan menjadi beberapa tahap kecil (misal: Tahap 1 Setup & Database Migration/Seeder -> Tahap 2 Modul Requestor -> Tahap 3 Modul CS Lab -> Tahap 4 Modul Technical Lab -> Tahap 5 Modul Validator & Export PDF).
+4. **Terkait databasenya di laragon kamu bisa membuatnya sendiri atau harus aku buatkan (sesuai instruksimu) manual?
+4. **Konfirmasi Tiap Tahap:** Selesaikan **1 tahap saja** per respons agar kode lengkap dan tidak terpotong, lalu berhenti dan minta saya mengecek hasilnya sebelum lanjut ke tahap berikutnya.
+
+Catatan tambahan: Project ini dibangun menggunakan framework Laravel (PHP & MySQL). Sesuaikan implementasinya dengan file-file Laravel yang relevan, seperti:
+- Controller: `app/Http/Controllers/TechnicalController.php` (serta `CsController.php` jika terkait auto-generate baris komponen)
+- Model: `app/Models/TestResult.php` dan `app/Models/TestItemDetail.php` (pastikan `$table`, `$primaryKey = 'id_detail'`, `$guarded = []`, relasi Eloquent, dan pengaturan timestamps sudah sesuai)
+- Routes: `routes/web.php`
+- Views (Blade): `resources/views/technical/input.blade.php` dan file matriks di `resources/views/technical/matrices/*.blade.php` (pastikan berakhiran `.blade.php`, dibungkus tag `<form>` + `@csrf`, dan mengirimkan array `rows[id_detail][...]` dengan nama kolom yang cocok ke database)
